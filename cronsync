@@ -5,15 +5,16 @@ LOCKFILE=/var/lock/cronsync.lock
 SOURCEDIR=/mnt/source/
 DESTDIR=/mnt/raid/
 
+LOGFILE=/var/log/cronsync.log
 
 if [ ! -f $LOCKFILE ]; then
 	touch $LOCKFILE
 fi
 
-if mountpoint -q $SOURCEDIR ; then
-	flock -n $LOCKFILE -c "echo rsync -av --delete-after $SOURCEDIR $DESTDIR >> /var/log/cronsync.log"
+if mountpoint -q $SOURCEDIR && mountpoint -q $DESTDIR; then
+	flock -n $LOCKFILE -c "rsync -av --delete-after $SOURCEDIR $DESTDIR >> $LOGFILE 2>&1"
 else
-	echo "$SOURCEDIR not mounted!"
+	echo "$SOURCEDIR or $DESTDIR not mounted!"
 	exit 251
 fi
 
