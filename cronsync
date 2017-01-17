@@ -11,6 +11,9 @@ if [ ! -f $LOCKFILE ]; then
 	touch $LOCKFILE
 fi
 
+echo "##########################################" >> $LOGFILE
+date >> $LOGFILE
+
 if mountpoint -q $SOURCEDIR && mountpoint -q $DESTDIR; then
 	flock -n $LOCKFILE -c "rsync -av --delete-after $SOURCEDIR $DESTDIR >> $LOGFILE 2>&1"
 else
